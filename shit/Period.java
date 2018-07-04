@@ -64,9 +64,15 @@ public class Period implements iSchedule{
     public void setEvents(PriorityQueue<Event> events) {
         this.events = events;
     }
+    
+    public boolean isValidEvent(Event e){
+        return (e.getStarting()<starting||e.getEnding()>ending);
+    }
 
     @Override
     public boolean addEvent(Event e) {
+        if(!isValidEvent(e))
+            return false;
         return events.add(e);
     }
 
@@ -74,7 +80,7 @@ public class Period implements iSchedule{
     public boolean addDailyEvent(Event e) {
         long period = e.getPeriod();
         long startFrom = e.getStarting();
-        if (startFrom < starting || startFrom > ending) {
+        if (!isValidEvent(e)) {
             System.out.println("The event is too early or too late for the SHIT.");
             return false;
         }
@@ -104,7 +110,7 @@ public class Period implements iSchedule{
         if(weekDays>127||weekDays<1)
             //bin(127)=1111111 0000000 indicates no weekday would have event happen
             return false;
-        if(e.getStarting()<starting||e.getEnding()>=ending||e.getPeriod()>DAY)
+        if((!isValidEvent(e))||e.getPeriod()>DAY)
             //invalid starting, ending time or invalid event period(>DAY)
             return false;
         String weekDaysIndicator = iSchedule.convertDecToBin(weekDays);
