@@ -1,5 +1,6 @@
 package shit;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -85,24 +86,63 @@ public class Period implements iSchedule{
             tempEvent = e.getCopy();//deep copy method has already changed the id
             if(!events.add(tempEvent))
                     return false;
-            startFrom += period;
+            //increatment the startFrom by one day
+            startFrom += DAY;
+        }
+        return true;
+    }
+
+    /**
+     * add weekly event(the event starting time will indicate the starting 
+     * week day and starting time(exat time during the day) and ending time
+     * @param e
+     * @param weekDays
+     * @return 
+     */
+    @Override
+    public boolean addWeeklyEvent(Event e, int weekDays) {
+        if(weekDays>127||weekDays<1)
+            //bin(127)=1111111 0000000 indicates no weekday would have event happen
+            return false;
+        if(e.getStarting()<starting||e.getEnding()>=ending||e.getPeriod()>DAY)
+            //invalid starting, ending time or invalid event period(>DAY)
+            return false;
+        String weekDaysIndicator = iSchedule.convertDecToBin(weekDays);
+        if(weekDaysIndicator.length()>7)
+            return false;
+        //patch up
+        int less = 7-weekDaysIndicator.length();
+        for(int i=0;i<less;i++){
+            weekDaysIndicator = "0"+weekDaysIndicator;
+        }
+        long startFrom = e.getStarting();
+        long period = e.getPeriod();
+        Date d = new Date(startFrom);
+        int day = d.getDay();
+        Event current;
+        for (int i = day; i < weekDaysIndicator.length(); i++) {
+            if (weekDaysIndicator.charAt(i) == '1') {
+                e.setStarting(startFrom);
+                e.setEnding(startFrom + period);
+                current = e.getCopy();//deep copy method has already changed the id
+                if (!events.add(current)) {
+                    return false;
+                }
+                //increatment startFrom by one day
+                startFrom += DAY;
+            }
         }
         return true;
     }
 
     @Override
-    public boolean addWeeklyEvent(Event e, int weekDays) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public boolean addMonthlyEvent(Event e, List<Integer> days) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false;
     }
 
     @Override
     public boolean addYearlyEvent(Event e, List<Date> dates) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false;
     }
 
     @Override
@@ -127,5 +167,20 @@ public class Period implements iSchedule{
     public void alert(Event e, String message) {
         //do something here
         return ;
+    }
+
+    @Override
+    public DaySchedule getDaySchedule(Date date) {
+        return null;
+    }
+
+    @Override
+    public WeekSchedule getWeekShedule(Date from) {
+        return null;
+    }
+
+    @Override
+    public MonthSchedule getMonthSchedule(Date month) {
+        return null;
     }
 }

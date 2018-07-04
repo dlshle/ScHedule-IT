@@ -31,6 +31,9 @@ public interface iSchedule {
     public boolean generateFile(String fileName);
     public void iterateEvents();
     public void alert(Event e, String message);
+    public DaySchedule getDaySchedule(Date date);
+    public WeekSchedule getWeekShedule(Date from);
+    public MonthSchedule getMonthSchedule(Date month);
     
     //Need Java8 support
     public static int convertBinToDec(String bin){
