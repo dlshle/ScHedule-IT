@@ -66,7 +66,7 @@ public class Period implements iSchedule{
     }
     
     public boolean isValidEvent(Event e){
-        return (e.getStarting()<starting||e.getEnding()>ending);
+        return (e.getStarting()>=starting||e.getEnding()<=ending);
     }
 
     @Override
