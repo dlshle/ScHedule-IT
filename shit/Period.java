@@ -1,6 +1,5 @@
 package shit;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -126,29 +125,115 @@ public class Period implements iSchedule{
         Date d = new Date(startFrom);
         int day = d.getDay();
         Event current;
-        for (int i = day; i < weekDaysIndicator.length(); i++) {
-            if (weekDaysIndicator.charAt(i) == '1') {
-                e.setStarting(startFrom);
-                e.setEnding(startFrom + period);
-                current = e.getCopy();//deep copy method has already changed the id
-                if (!events.add(current)) {
-                    return false;
-                }
+        while (startFrom < ending) {
+            for (int i = day; i < weekDaysIndicator.length(); i++) {
+                if (weekDaysIndicator.charAt(i) == '1') {
+                    e.setStarting(startFrom);
+                    e.setEnding(startFrom + period);
+                    current = e.getCopy();//deep copy method has already changed the id
+                    if (!events.add(current)) {
+                        return false;
+                    }
+                }                
                 //increatment startFrom by one day
                 startFrom += DAY;
             }
+            day = 0;
         }
         return true;
     }
 
     @Override
     public boolean addMonthlyEvent(Event e, List<Integer> days) {
-        return false;
+        if(!isValidEvent(e))
+            return false;
+        Date firstStartingDate = e.getStartingDate();
+        int year = firstStartingDate.getYear();
+        int month = firstStartingDate.getMonth();
+        int startingDate = firstStartingDate.getDate();
+        long period = e.getPeriod();
+        int lengthOfMonth;        
+        while (e.getStarting() < ending) {
+            //validating the length of period
+            lengthOfMonth = (DateToolSet.isLeapYear(year) ? DateToolSet.LEAP_YEAR_MONTHS[month] : DateToolSet.MONTHS[month]);
+            if ((period > (DAY * lengthOfMonth))) {
+                return false;
+            }
+            for (int i : days) {
+                //iterating days and modify the event
+                if (i > lengthOfMonth) {
+                    return false;
+                }
+                if (i < startingDate) {
+                    continue;
+                }
+                e.setStarting(e.getStarting() + DAY * i - startingDate);
+                e.setEnding(e.getStarting() + period);
+                if (!events.add(e.getCopy())) {
+                    return false;
+                }
+            }
+            //checking if it's the end of the year
+            if(++month==13){
+                month=1;
+                year++;
+            }
+        }
+        return true;
     }
 
+    /**
+     * Unfinished, will fix this later...
+     * @param e
+     * @param dates
+     * @return 
+     */
     @Override
     public boolean addYearlyEvent(Event e, List<Date> dates) {
-        return false;
+        if(!isValidEvent(e))
+            return false;
+        DateToolSet.sortAndSetSameYear(dates);
+        Date startTime = e.getStartingDate();
+        int year = startTime.getYear();
+        int startMonth = startTime.getMonth();
+        int startDate = startTime.getDate();
+        long period = e.getPeriod();
+        boolean isLeapYear;
+        int lengthOfYear ;
+        int monthOfDates;
+        int dateOfDates;
+        while (e.getStarting() < ending) {
+            //validating the length of period, need to validate for each year before the ending year
+            isLeapYear = DateToolSet.isLeapYear(year);
+            lengthOfYear = (isLeapYear ? 366 : 365);
+            if ((period > (DAY * lengthOfYear))) {
+                return false;
+            }
+            //prepare the start dates for this year
+            startMonth = startTime.getMonth();
+            startDate = startTime.getDate();
+            
+            for (Date d : dates) {
+                monthOfDates = d.getMonth();
+                dateOfDates = d.getDate();
+                //validate the date of that year(checking Feb 29)
+                if(monthOfDates==2&&!isLeapYear&&dateOfDates==29){
+                    continue;
+                }
+                
+                /*e.setStarting(e.getStarting() + DAY * i - startDate);
+                e.setEnding(e.getStarting() + period);
+                if (!events.add(e.getCopy())) {
+                    return false;
+                }*/
+            }
+            //increatment the year
+            startTime.setYear(year++);
+            //set the date to the first date in dates
+            startTime.setMonth(dates.get(0).getMonth());
+            startTime.setDate(dates.get(0).getDate());
+        }
+        return true;
     }
 
     @Override
@@ -184,9 +269,49 @@ public class Period implements iSchedule{
     public WeekSchedule getWeekShedule(Date from) {
         return null;
     }
+    
+    @Override
+    public boolean contaninsEvent(Event e){
+        return false;
+    }
 
     @Override
     public MonthSchedule getMonthSchedule(Date month) {
         return null;
+    }
+
+    @Override
+    public List<Event> getEventsByParticipator(Personel participator) {
+        return null;
+    }
+
+    @Override
+    public List<Event> getEventsByParticipators(List<Personel> participators) {
+        return null;
+    }
+
+    @Override
+    public List<Event> getEventsByTimePeriod(Date from, Date to) {
+        return null;
+    }
+
+    @Override
+    public List<Event> getEvenetsByTitle(String title) {
+        return null;
+    }
+
+    @Override
+    public boolean removeEventById(int id) {
+        return false;
+    }
+
+    @Override
+    public boolean removeEventByTitle(String title) {
+        return false;
+    }
+
+    @Override
+    public boolean removeEvent(Event e) {
+        return false;
     }
 }

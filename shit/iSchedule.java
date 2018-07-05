@@ -31,9 +31,17 @@ public interface iSchedule {
     public boolean generateFile(String fileName);
     public void iterateEvents();
     public void alert(Event e, String message);
+    public boolean contaninsEvent(Event e);
     public DaySchedule getDaySchedule(Date date);
     public WeekSchedule getWeekShedule(Date from);
     public MonthSchedule getMonthSchedule(Date month);
+    public List<Event> getEventsByParticipator(Personel participator);
+    public List<Event> getEventsByParticipators(List<Personel> participators);
+    public List<Event> getEventsByTimePeriod(Date from, Date to);
+    public List<Event> getEvenetsByTitle(String title);
+    public boolean removeEventById(int id);
+    public boolean removeEventByTitle(String title);
+    public boolean removeEvent(Event e);
     
     //Need Java8 support
     public static int convertBinToDec(String bin){
