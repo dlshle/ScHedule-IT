@@ -1,9 +1,12 @@
 package shit;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 public class Period implements iSchedule{
 
@@ -23,6 +26,18 @@ public class Period implements iSchedule{
         }
         events = new PriorityQueue<>();
     }
+    
+    public Period(long id, Date starting, Date ending) {
+        this.id = id;
+        this.starting = starting.getTime();
+        if (ending.getTime() < this.starting) {
+            System.out.println("ERROR, period "+id+" has an invalid ending time(Ending>Starting)!");
+            this.ending = this.starting;
+        } else {
+            this.ending = ending.getTime();
+        }
+        events = new PriorityQueue<>();
+    }
 
     public Period(long id, long starting, long ending, PriorityQueue<Event> events) {
         this.id = id;
@@ -32,6 +47,18 @@ public class Period implements iSchedule{
             this.ending = this.starting;
         } else {
             this.ending = ending;
+        }
+        this.events = events;
+    }
+    
+    public Period(long id, Date starting, Date ending, PriorityQueue<Event> events) {
+        this.id = id;
+        this.starting = starting.getTime();
+        if (ending.getTime() < this.starting) {
+            System.out.println("ERROR, period "+id+" has an invalid ending time(Ending>Starting)!");
+            this.ending = this.starting;
+        } else {
+            this.ending = ending.getTime();
         }
         this.events = events;
     }
@@ -195,8 +222,6 @@ public class Period implements iSchedule{
         DateToolSet.sortAndSetSameYear(dates);
         Date startTime = e.getStartingDate();
         int year = startTime.getYear();
-        int startMonth = startTime.getMonth();
-        int startDate = startTime.getDate();
         long period = e.getPeriod();
         boolean isLeapYear;
         int lengthOfYear ;
@@ -209,10 +234,7 @@ public class Period implements iSchedule{
             if ((period > (DAY * lengthOfYear))) {
                 return false;
             }
-            //prepare the start dates for this year
-            startMonth = startTime.getMonth();
-            startDate = startTime.getDate();
-            
+            //iterate and add dates
             for (Date d : dates) {
                 monthOfDates = d.getMonth();
                 dateOfDates = d.getDate();
@@ -220,18 +242,17 @@ public class Period implements iSchedule{
                 if(monthOfDates==2&&!isLeapYear&&dateOfDates==29){
                     continue;
                 }
-                
-                /*e.setStarting(e.getStarting() + DAY * i - startDate);
-                e.setEnding(e.getStarting() + period);
+                //set event date
+                startTime.setMonth(monthOfDates);
+                startTime.setDate(dateOfDates);
+                e.setStartingDate(startTime);
+                e.setEnding(e.getStarting()+period);
                 if (!events.add(e.getCopy())) {
                     return false;
-                }*/
+                }
             }
             //increatment the year
             startTime.setYear(year++);
-            //set the date to the first date in dates
-            startTime.setMonth(dates.get(0).getMonth());
-            startTime.setDate(dates.get(0).getDate());
         }
         return true;
     }
@@ -259,12 +280,29 @@ public class Period implements iSchedule{
         //do something here
         return ;
     }
+    
+    public boolean isValidTime(long time){
+        return time>starting&&time<ending;
+    }
 
+    /**
+     * 
+     * @param date date has to be the beginning of the day(0:00)
+     * @return 草，老子懒得干了，费事
+     */
     @Override
     public DaySchedule getDaySchedule(Date date) {
+        if(!(isValidTime(date.getTime())&&isValidTime(date.getTime()+DAY)))
+            return null;
+        //acquiring all the events from that day
         return null;
     }
 
+    /**
+     * old son no fuck anymore
+     * @param from
+     * @return 
+     */
     @Override
     public WeekSchedule getWeekShedule(Date from) {
         return null;
@@ -272,46 +310,124 @@ public class Period implements iSchedule{
     
     @Override
     public boolean contaninsEvent(Event e){
-        return false;
+        return events.contains(e);
     }
 
     @Override
     public MonthSchedule getMonthSchedule(Date month) {
         return null;
     }
+    
+    @Override
+    public Event getEventById(int id){
+        for(Event e:events){
+            if(e.getId()==id)
+                return e;
+        }
+        return null;
+    }
 
     @Override
     public List<Event> getEventsByParticipator(Personel participator) {
-        return null;
+        ArrayList<Event> result = new ArrayList<>();
+        for(Event e:events){
+            if(e.getParticipators().contains(participator))
+                result.add(e);
+        }
+        return result;
     }
 
+    /**
+     * As long as the event has one of the participators, it counts.(very inefficient)
+     * @param participators
+     * @return 
+     */
     @Override
-    public List<Event> getEventsByParticipators(List<Personel> participators) {
+    public List<Event> getEventsByParticipators(Set<Personel> participators) {
         return null;
     }
 
+    /**
+     * Get events by exat participators
+     * @param participators
+     * @return 
+     */
+    @Override
+    public List<Event> getEventsByExatParticipators(Set<Personel> participators){
+        ArrayList<Event> result = new ArrayList<>();
+        for(Event e:events){
+            if(e.getParticipators().equals(participators))
+                result.add(e);
+        }
+        return result;
+    }
+    
+    /**
+     * list all events ending after the date
+     * @param time
+     * @return 
+     */
+    @Override
+    public List<Event> getEventsAfter(Date time){
+        long afterTime = time.getTime();
+        ArrayList<Event> result = new ArrayList<>();
+        for(Event e:events){
+            if(e.getEnding()>=afterTime){
+                result.add(e);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * list all events ending after from and starting before to
+     * @param from
+     * @param to
+     * @return 
+     */
     @Override
     public List<Event> getEventsByTimePeriod(Date from, Date to) {
-        return null;
+        long fromTime = from.getTime();
+        long afterTime = to.getTime();
+        ArrayList<Event> result = new ArrayList<>();
+        for(Event e:events){
+            if(e.getEnding()>=afterTime&&e.getStarting()<=fromTime){
+                result.add(e);
+            }
+        }
+        return result;
     }
 
     @Override
-    public List<Event> getEvenetsByTitle(String title) {
-        return null;
+    public List<Event> getEventsByTitle(String title) {
+        ArrayList<Event> result = new ArrayList<>();
+        for(Event e:events){
+            if(e.getTitle().equals(title))
+                result.add(e);
+        }
+        return result;
     }
 
     @Override
     public boolean removeEventById(int id) {
+        for(Event e:events){
+            if(e.getId()==id)
+                return events.remove(e);
+        }
         return false;
     }
 
     @Override
     public boolean removeEventByTitle(String title) {
+        for(Event e:events){
+            if(e.getTitle().equals(title))
+                return events.remove(e);
+        }
         return false;
     }
 
     @Override
     public boolean removeEvent(Event e) {
-        return false;
+        return events.remove(e);
     }
 }

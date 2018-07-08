@@ -67,7 +67,7 @@ public class Personel implements Comparable{
         return remark;
     }
 
-    public boolean isSex() {
+    public boolean getSex() {
         return sex;
     }
 
@@ -126,7 +126,7 @@ public class Personel implements Comparable{
     @Override
     public boolean equals(Object o){
         Personel p = (Personel)o;
-        return id==p.getId();
+        return (id==p.getId())||(name.equals(p.getName())&&age==p.getAge()&&sex==p.getSex());
     }
     
     @Override

@@ -322,8 +322,15 @@ public class Event implements Comparable {
         this.description = description;
     }
 
-    public void setStarting(long starting) {
+    public boolean setStarting(long starting) {
+        if(starting>ending)
+            return false;
         this.starting = starting;
+        return true;
+    }
+    
+    public boolean setStartingDate(Date startingDate){
+        return setStarting(startingDate.getTime());
     }
 
     public boolean setEnding(long ending) {
@@ -331,6 +338,10 @@ public class Event implements Comparable {
             return false;
         this.ending = ending;
         return true;
+    }
+    
+    public boolean setEndingDate(Date endingDate){
+        return setEnding(endingDate.getTime());
     }
 
     public void setParticipators(HashSet<Personel> participators) {

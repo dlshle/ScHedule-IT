@@ -2,6 +2,7 @@ package shit;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface iSchedule {
     public static final long MINUTE = 64000;
@@ -35,10 +36,13 @@ public interface iSchedule {
     public DaySchedule getDaySchedule(Date date);
     public WeekSchedule getWeekShedule(Date from);
     public MonthSchedule getMonthSchedule(Date month);
+    public Event getEventById(int id);
     public List<Event> getEventsByParticipator(Personel participator);
-    public List<Event> getEventsByParticipators(List<Personel> participators);
+    public List<Event> getEventsByParticipators(Set<Personel> participators);
+    public List<Event> getEventsByExatParticipators(Set<Personel> participators);
+    public List<Event> getEventsAfter(Date time);
     public List<Event> getEventsByTimePeriod(Date from, Date to);
-    public List<Event> getEvenetsByTitle(String title);
+    public List<Event> getEventsByTitle(String title);
     public boolean removeEventById(int id);
     public boolean removeEventByTitle(String title);
     public boolean removeEvent(Event e);
