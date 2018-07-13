@@ -2,7 +2,6 @@ package shit;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -16,6 +15,12 @@ public class Period implements iSchedule{
     protected PriorityQueue<Event> events;
 
     public Period(long id, long starting, long ending) {
+        if(iSchedule.idList.contains(id)){
+            int newId;
+            do{
+                newId = (int) (Math.random() * 1000);
+            }while(!iSchedule.idList.add(newId));
+        }
         this.id = id;
         this.starting = starting;
         if (ending < starting) {
@@ -28,6 +33,12 @@ public class Period implements iSchedule{
     }
     
     public Period(long id, Date starting, Date ending) {
+        if(iSchedule.idList.contains(id)){
+            int newId;
+            do{
+                newId = (int) (Math.random() * 1000);
+            }while(!iSchedule.idList.add(newId));
+        }
         this.id = id;
         this.starting = starting.getTime();
         if (ending.getTime() < this.starting) {
@@ -40,6 +51,12 @@ public class Period implements iSchedule{
     }
 
     public Period(long id, long starting, long ending, PriorityQueue<Event> events) {
+        if(iSchedule.idList.contains(id)){
+            int newId;
+            do{
+                newId = (int) (Math.random() * 1000);
+            }while(!iSchedule.idList.add(newId));
+        }
         this.id = id;
         this.starting = starting;
         if (ending < starting) {
@@ -52,6 +69,12 @@ public class Period implements iSchedule{
     }
     
     public Period(long id, Date starting, Date ending, PriorityQueue<Event> events) {
+        if(iSchedule.idList.contains(id)){
+            int newId;
+            do{
+                newId = (int) (Math.random() * 1000);
+            }while(!iSchedule.idList.add(newId));
+        }
         this.id = id;
         this.starting = starting.getTime();
         if (ending.getTime() < this.starting) {
@@ -92,7 +115,7 @@ public class Period implements iSchedule{
     }
     
     public boolean isValidEvent(Event e){
-        return (e.getStarting()>=starting||e.getEnding()<=ending);
+        return (!events.contains(e))&&(e.getStarting()>=starting||e.getEnding()<=ending);
     }
 
     @Override
@@ -100,6 +123,15 @@ public class Period implements iSchedule{
         if(!isValidEvent(e))
             return false;
         return events.add(e);
+    }
+    
+    @Override
+    public boolean addEvents(List<Event> events){
+        for(Event e:events){
+            if(!addEvent(e))
+                return false;
+        }
+        return true;
     }
 
     @Override
@@ -116,7 +148,7 @@ public class Period implements iSchedule{
             e.setStarting(startFrom);
             e.setEnding(startFrom + period);
             tempEvent = e.getCopy();//deep copy method has already changed the id
-            if(!events.add(tempEvent))
+            if(!addEvent(tempEvent))
                     return false;
             //increatment the startFrom by one day
             startFrom += DAY;
@@ -158,10 +190,10 @@ public class Period implements iSchedule{
                     e.setStarting(startFrom);
                     e.setEnding(startFrom + period);
                     current = e.getCopy();//deep copy method has already changed the id
-                    if (!events.add(current)) {
+                    if (!addEvent(current)) {
                         return false;
                     }
-                }                
+                }
                 //increatment startFrom by one day
                 startFrom += DAY;
             }
@@ -196,7 +228,7 @@ public class Period implements iSchedule{
                 }
                 e.setStarting(e.getStarting() + DAY * i - startingDate);
                 e.setEnding(e.getStarting() + period);
-                if (!events.add(e.getCopy())) {
+                if (!addEvent(e.getCopy())) {
                     return false;
                 }
             }
@@ -247,7 +279,7 @@ public class Period implements iSchedule{
                 startTime.setDate(dateOfDates);
                 e.setStartingDate(startTime);
                 e.setEnding(e.getStarting()+period);
-                if (!events.add(e.getCopy())) {
+                if (!addEvent(e.getCopy())) {
                     return false;
                 }
             }
@@ -256,7 +288,12 @@ public class Period implements iSchedule{
         }
         return true;
     }
-
+    
+    @Override
+    public boolean contaninsEvent(Event e){
+        return events.contains(e);
+    }
+    
     @Override
     public boolean generateFile(String fileName) {
         return false;
@@ -299,7 +336,7 @@ public class Period implements iSchedule{
     }
 
     /**
-     * old son no fuck anymore
+     * get each DayPeriod at that week and combine them
      * @param from
      * @return 
      */
@@ -307,12 +344,12 @@ public class Period implements iSchedule{
     public WeekSchedule getWeekShedule(Date from) {
         return null;
     }
-    
-    @Override
-    public boolean contaninsEvent(Event e){
-        return events.contains(e);
-    }
 
+    /**
+     * get each DayPeriod at that month and combine them
+     * @param month
+     * @return 
+     */
     @Override
     public MonthSchedule getMonthSchedule(Date month) {
         return null;
@@ -429,5 +466,36 @@ public class Period implements iSchedule{
     @Override
     public boolean removeEvent(Event e) {
         return events.remove(e);
+    }
+    
+    private long getGap(Event e1, Event e2){
+        return e2.getStarting()-e1.getEnding();
+    }
+
+    @Override
+    public Period findLongestGap() {
+        long maxLen = 0;
+        long maxStart;
+        long maxEnd;
+        Event current;
+        Event next;
+        Iterator<Event> it = events.iterator();
+        while(it.hasNext()){
+            current = it.next();
+            while(it.hasNext()){
+                next = it.next();
+                if(next.getStarting()<=current.getEnding())
+                    continue;
+                if(getGap(current, next)>maxLen){
+                    maxStart = current.getEnding();
+                    maxEnd = next.getStarting();
+                }
+            }
+        }
+    }
+
+    @Override
+    public Period findMostOverlayedPeriod() {
+        return null;
     }
 }

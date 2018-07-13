@@ -1,6 +1,8 @@
 package shit;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -9,7 +11,9 @@ public interface iSchedule {
     public static final long HOUR = 3600000;
     public static final long DAY = 86400000;
     public static final long WEEK = 604800000;
+    public static HashSet<Integer> idList = new HashSet<>();
     public boolean addEvent(Event e);
+    public boolean addEvents(List<Event> events);
     /**
      * e.getStarting() indicates the first day
      * @param e
@@ -46,6 +50,8 @@ public interface iSchedule {
     public boolean removeEventById(int id);
     public boolean removeEventByTitle(String title);
     public boolean removeEvent(Event e);
+    public Period findLongestGap();
+    public Period findMostOverlayedPeriod();
     
     //Need Java8 support
     public static int convertBinToDec(String bin){
@@ -67,5 +73,21 @@ public interface iSchedule {
     
     public static String convertDecToBin(int n){
         return Integer.toBinaryString(n);
+    }
+    
+    public static Period combinePeriods(List<Period> periods){
+        long earliestStarting = 0;
+        long latestEnding = 0;
+        ArrayList<Event> events = new ArrayList<>();
+        for(Period p:periods){
+            if(p.getStarting()<earliestStarting)
+                earliestStarting = p.getStarting();
+            if(p.getEnding()>latestEnding)
+                latestEnding = p.getEnding();
+            events.addAll(p.getEvents());
+        }
+        Period result = new Period((int)(Math.random()*1000),earliestStarting,latestEnding);
+        result.addEvents(events);
+        return result;
     }
 }
