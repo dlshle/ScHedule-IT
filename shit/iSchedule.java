@@ -51,7 +51,7 @@ public interface iSchedule {
     public boolean removeEventByTitle(String title);
     public boolean removeEvent(Event e);
     public Period findLongestGap();
-    public Period findMostOverlayedPeriod();
+    public Period findLongestConsecutivePeriod();
     
     //Need Java8 support
     public static int convertBinToDec(String bin){

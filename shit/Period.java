@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-public class Period implements iSchedule{
+public class Period implements iSchedule {
 
     protected long id;
     protected long starting;
@@ -15,34 +15,34 @@ public class Period implements iSchedule{
     protected PriorityQueue<Event> events;
 
     public Period(long id, long starting, long ending) {
-        if(iSchedule.idList.contains(id)){
+        if (iSchedule.idList.contains(id)) {
             int newId;
-            do{
+            do {
                 newId = (int) (Math.random() * 1000);
-            }while(!iSchedule.idList.add(newId));
+            } while (!iSchedule.idList.add(newId));
         }
         this.id = id;
         this.starting = starting;
         if (ending < starting) {
-            System.out.println("ERROR, period "+id+" has an invalid ending time(Ending>Starting)!");
+            System.out.println("ERROR, period " + id + " has an invalid ending time(Ending>Starting)!");
             this.ending = this.starting;
         } else {
             this.ending = ending;
         }
         events = new PriorityQueue<>();
     }
-    
+
     public Period(long id, Date starting, Date ending) {
-        if(iSchedule.idList.contains(id)){
+        if (iSchedule.idList.contains(id)) {
             int newId;
-            do{
+            do {
                 newId = (int) (Math.random() * 1000);
-            }while(!iSchedule.idList.add(newId));
+            } while (!iSchedule.idList.add(newId));
         }
         this.id = id;
         this.starting = starting.getTime();
         if (ending.getTime() < this.starting) {
-            System.out.println("ERROR, period "+id+" has an invalid ending time(Ending>Starting)!");
+            System.out.println("ERROR, period " + id + " has an invalid ending time(Ending>Starting)!");
             this.ending = this.starting;
         } else {
             this.ending = ending.getTime();
@@ -51,34 +51,34 @@ public class Period implements iSchedule{
     }
 
     public Period(long id, long starting, long ending, PriorityQueue<Event> events) {
-        if(iSchedule.idList.contains(id)){
+        if (iSchedule.idList.contains(id)) {
             int newId;
-            do{
+            do {
                 newId = (int) (Math.random() * 1000);
-            }while(!iSchedule.idList.add(newId));
+            } while (!iSchedule.idList.add(newId));
         }
         this.id = id;
         this.starting = starting;
         if (ending < starting) {
-            System.out.println("ERROR, period "+id+" has an invalid ending time(Ending>Starting)!");
+            System.out.println("ERROR, period " + id + " has an invalid ending time(Ending>Starting)!");
             this.ending = this.starting;
         } else {
             this.ending = ending;
         }
         this.events = events;
     }
-    
+
     public Period(long id, Date starting, Date ending, PriorityQueue<Event> events) {
-        if(iSchedule.idList.contains(id)){
+        if (iSchedule.idList.contains(id)) {
             int newId;
-            do{
+            do {
                 newId = (int) (Math.random() * 1000);
-            }while(!iSchedule.idList.add(newId));
+            } while (!iSchedule.idList.add(newId));
         }
         this.id = id;
         this.starting = starting.getTime();
         if (ending.getTime() < this.starting) {
-            System.out.println("ERROR, period "+id+" has an invalid ending time(Ending>Starting)!");
+            System.out.println("ERROR, period " + id + " has an invalid ending time(Ending>Starting)!");
             this.ending = this.starting;
         } else {
             this.ending = ending.getTime();
@@ -108,28 +108,31 @@ public class Period implements iSchedule{
 
     /**
      * If necessary, try not to use this!!!!!!!!!!!
+     *
      * @param events new events that would replace the old ones
      */
     public void setEvents(PriorityQueue<Event> events) {
         this.events = events;
     }
-    
-    public boolean isValidEvent(Event e){
-        return (!events.contains(e))&&(e.getStarting()>=starting||e.getEnding()<=ending);
+
+    public boolean isValidEvent(Event e) {
+        return (!events.contains(e)) && (e.getStarting() >= starting || e.getEnding() <= ending);
     }
 
     @Override
     public boolean addEvent(Event e) {
-        if(!isValidEvent(e))
+        if (!isValidEvent(e)) {
             return false;
+        }
         return events.add(e);
     }
-    
+
     @Override
-    public boolean addEvents(List<Event> events){
-        for(Event e:events){
-            if(!addEvent(e))
+    public boolean addEvents(List<Event> events) {
+        for (Event e : events) {
+            if (!addEvent(e)) {
                 return false;
+            }
         }
         return true;
     }
@@ -148,8 +151,9 @@ public class Period implements iSchedule{
             e.setStarting(startFrom);
             e.setEnding(startFrom + period);
             tempEvent = e.getCopy();//deep copy method has already changed the id
-            if(!addEvent(tempEvent))
-                    return false;
+            if (!addEvent(tempEvent)) {
+                return false;
+            }
             //increatment the startFrom by one day
             startFrom += DAY;
         }
@@ -157,27 +161,31 @@ public class Period implements iSchedule{
     }
 
     /**
-     * add weekly event(the event starting time will indicate the starting 
-     * week day and starting time(exat time during the day) and ending time
+     * add weekly event(the event starting time will indicate the starting week
+     * day and starting time(exat time during the day) and ending time
+     *
      * @param e
      * @param weekDays
-     * @return 
+     * @return
      */
     @Override
     public boolean addWeeklyEvent(Event e, int weekDays) {
-        if(weekDays>127||weekDays<1)
-            //bin(127)=1111111 0000000 indicates no weekday would have event happen
+        if (weekDays > 127 || weekDays < 1) //bin(127)=1111111 0000000 indicates no weekday would have event happen
+        {
             return false;
-        if((!isValidEvent(e))||e.getPeriod()>DAY)
-            //invalid starting, ending time or invalid event period(>DAY)
+        }
+        if ((!isValidEvent(e)) || e.getPeriod() > DAY) //invalid starting, ending time or invalid event period(>DAY)
+        {
             return false;
+        }
         String weekDaysIndicator = iSchedule.convertDecToBin(weekDays);
-        if(weekDaysIndicator.length()>7)
+        if (weekDaysIndicator.length() > 7) {
             return false;
+        }
         //patch up
-        int less = 7-weekDaysIndicator.length();
-        for(int i=0;i<less;i++){
-            weekDaysIndicator = "0"+weekDaysIndicator;
+        int less = 7 - weekDaysIndicator.length();
+        for (int i = 0; i < less; i++) {
+            weekDaysIndicator = "0" + weekDaysIndicator;
         }
         long startFrom = e.getStarting();
         long period = e.getPeriod();
@@ -204,14 +212,15 @@ public class Period implements iSchedule{
 
     @Override
     public boolean addMonthlyEvent(Event e, List<Integer> days) {
-        if(!isValidEvent(e))
+        if (!isValidEvent(e)) {
             return false;
+        }
         Date firstStartingDate = e.getStartingDate();
         int year = firstStartingDate.getYear();
         int month = firstStartingDate.getMonth();
         int startingDate = firstStartingDate.getDate();
         long period = e.getPeriod();
-        int lengthOfMonth;        
+        int lengthOfMonth;
         while (e.getStarting() < ending) {
             //validating the length of period
             lengthOfMonth = (DateToolSet.isLeapYear(year) ? DateToolSet.LEAP_YEAR_MONTHS[month] : DateToolSet.MONTHS[month]);
@@ -233,8 +242,8 @@ public class Period implements iSchedule{
                 }
             }
             //checking if it's the end of the year
-            if(++month==13){
-                month=1;
+            if (++month == 13) {
+                month = 1;
                 year++;
             }
         }
@@ -243,20 +252,22 @@ public class Period implements iSchedule{
 
     /**
      * Unfinished, will fix this later...
+     *
      * @param e
      * @param dates
-     * @return 
+     * @return
      */
     @Override
     public boolean addYearlyEvent(Event e, List<Date> dates) {
-        if(!isValidEvent(e))
+        if (!isValidEvent(e)) {
             return false;
+        }
         DateToolSet.sortAndSetSameYear(dates);
         Date startTime = e.getStartingDate();
         int year = startTime.getYear();
         long period = e.getPeriod();
         boolean isLeapYear;
-        int lengthOfYear ;
+        int lengthOfYear;
         int monthOfDates;
         int dateOfDates;
         while (e.getStarting() < ending) {
@@ -271,14 +282,14 @@ public class Period implements iSchedule{
                 monthOfDates = d.getMonth();
                 dateOfDates = d.getDate();
                 //validate the date of that year(checking Feb 29)
-                if(monthOfDates==2&&!isLeapYear&&dateOfDates==29){
+                if (monthOfDates == 2 && !isLeapYear && dateOfDates == 29) {
                     continue;
                 }
                 //set event date
                 startTime.setMonth(monthOfDates);
                 startTime.setDate(dateOfDates);
                 e.setStartingDate(startTime);
-                e.setEnding(e.getStarting()+period);
+                e.setEnding(e.getStarting() + period);
                 if (!addEvent(e.getCopy())) {
                     return false;
                 }
@@ -288,12 +299,12 @@ public class Period implements iSchedule{
         }
         return true;
     }
-    
+
     @Override
-    public boolean contaninsEvent(Event e){
+    public boolean contaninsEvent(Event e) {
         return events.contains(e);
     }
-    
+
     @Override
     public boolean generateFile(String fileName) {
         return false;
@@ -308,58 +319,70 @@ public class Period implements iSchedule{
             do earlyAlerm;
             use event runner to run the event(differnet thread)
             next one..
-            */
+             */
         }
     }
 
     @Override
     public void alert(Event e, String message) {
         //do something here
-        return ;
+        return;
     }
-    
-    public boolean isValidTime(long time){
-        return time>starting&&time<ending;
+
+    public boolean isValidTime(long time) {
+        return time > starting && time < ending;
     }
 
     /**
-     * 
+     *
      * @param date date has to be the beginning of the day(0:00)
      * @return 草，老子懒得干了，费事
      */
     @Override
     public DaySchedule getDaySchedule(Date date) {
-        if(!(isValidTime(date.getTime())&&isValidTime(date.getTime()+DAY)))
+        if (!(isValidTime(date.getTime()) && isValidTime(date.getTime() + DAY))) {
             return null;
+        }
         //acquiring all the events from that day
+        Date endDate = new Date(date.getTime()+DAY);
+        List<Event> dayEvents = getEventsByTimePeriod(date,endDate);
         return null;
     }
 
     /**
-     * get each DayPeriod at that week and combine them
+     *
      * @param from
-     * @return 
+     * @return
      */
     @Override
     public WeekSchedule getWeekShedule(Date from) {
+        if (!(isValidTime(from.getTime()) && isValidTime(from.getTime() + WEEK))) {
+            return null;
+        }
+        //acquiring all the events from that day
+        Date to = new Date(from.getTime() + WEEK);
+        List<Event> dayEvents = getEventsByTimePeriod(from,to);
         return null;
     }
 
     /**
      * get each DayPeriod at that month and combine them
+     *
      * @param month
-     * @return 
+     * @return
      */
     @Override
     public MonthSchedule getMonthSchedule(Date month) {
+        //TO-DO:I'm Indian, you know what I mean?
         return null;
     }
-    
+
     @Override
-    public Event getEventById(int id){
-        for(Event e:events){
-            if(e.getId()==id)
+    public Event getEventById(int id) {
+        for (Event e : events) {
+            if (e.getId() == id) {
                 return e;
+            }
         }
         return null;
     }
@@ -367,17 +390,20 @@ public class Period implements iSchedule{
     @Override
     public List<Event> getEventsByParticipator(Personel participator) {
         ArrayList<Event> result = new ArrayList<>();
-        for(Event e:events){
-            if(e.getParticipators().contains(participator))
+        for (Event e : events) {
+            if (e.getParticipators().contains(participator)) {
                 result.add(e);
+            }
         }
         return result;
     }
 
     /**
-     * As long as the event has one of the participators, it counts.(very inefficient)
+     * As long as the event has one of the participators, it counts.(very
+     * inefficient)
+     *
      * @param participators
-     * @return 
+     * @return
      */
     @Override
     public List<Event> getEventsByParticipators(Set<Personel> participators) {
@@ -386,49 +412,53 @@ public class Period implements iSchedule{
 
     /**
      * Get events by exat participators
+     *
      * @param participators
-     * @return 
+     * @return
      */
     @Override
-    public List<Event> getEventsByExatParticipators(Set<Personel> participators){
+    public List<Event> getEventsByExatParticipators(Set<Personel> participators) {
         ArrayList<Event> result = new ArrayList<>();
-        for(Event e:events){
-            if(e.getParticipators().equals(participators))
-                result.add(e);
-        }
-        return result;
-    }
-    
-    /**
-     * list all events ending after the date
-     * @param time
-     * @return 
-     */
-    @Override
-    public List<Event> getEventsAfter(Date time){
-        long afterTime = time.getTime();
-        ArrayList<Event> result = new ArrayList<>();
-        for(Event e:events){
-            if(e.getEnding()>=afterTime){
+        for (Event e : events) {
+            if (e.getParticipators().equals(participators)) {
                 result.add(e);
             }
         }
         return result;
     }
-    
+
+    /**
+     * list all events ending after the date
+     *
+     * @param time
+     * @return
+     */
+    @Override
+    public List<Event> getEventsAfter(Date time) {
+        long afterTime = time.getTime();
+        ArrayList<Event> result = new ArrayList<>();
+        for (Event e : events) {
+            if (e.getEnding() >= afterTime) {
+                result.add(e);
+            }
+        }
+        return result;
+    }
+
     /**
      * list all events ending after from and starting before to
+     *
      * @param from
      * @param to
-     * @return 
+     * @return
      */
     @Override
     public List<Event> getEventsByTimePeriod(Date from, Date to) {
         long fromTime = from.getTime();
         long afterTime = to.getTime();
         ArrayList<Event> result = new ArrayList<>();
-        for(Event e:events){
-            if(e.getEnding()>=afterTime&&e.getStarting()<=fromTime){
+        for (Event e : events) {
+            if (e.getEnding() <= afterTime && e.getStarting() >= fromTime) {
                 result.add(e);
             }
         }
@@ -438,27 +468,30 @@ public class Period implements iSchedule{
     @Override
     public List<Event> getEventsByTitle(String title) {
         ArrayList<Event> result = new ArrayList<>();
-        for(Event e:events){
-            if(e.getTitle().equals(title))
+        for (Event e : events) {
+            if (e.getTitle().equals(title)) {
                 result.add(e);
+            }
         }
         return result;
     }
 
     @Override
     public boolean removeEventById(int id) {
-        for(Event e:events){
-            if(e.getId()==id)
+        for (Event e : events) {
+            if (e.getId() == id) {
                 return events.remove(e);
+            }
         }
         return false;
     }
 
     @Override
     public boolean removeEventByTitle(String title) {
-        for(Event e:events){
-            if(e.getTitle().equals(title))
+        for (Event e : events) {
+            if (e.getTitle().equals(title)) {
                 return events.remove(e);
+            }
         }
         return false;
     }
@@ -467,35 +500,79 @@ public class Period implements iSchedule{
     public boolean removeEvent(Event e) {
         return events.remove(e);
     }
-    
-    private long getGap(Event e1, Event e2){
-        return e2.getStarting()-e1.getEnding();
+
+    private long getGap(Event e1, Event e2) {
+        return e2.getStarting() - e1.getEnding();
     }
 
     @Override
     public Period findLongestGap() {
+        if (events.isEmpty()) {
+            return new Period(id + 1, starting, ending);
+        }
+        if (events.size() == 1) {
+            return (starting - events.peek().getStarting() >= ending - events.peek().getEnding() ? new Period(id + 1, starting, events.peek().getStarting()) : new Period(id + 1, events.peek().getEnding(), ending));
+        }
         long maxLen = 0;
-        long maxStart;
-        long maxEnd;
+        long maxStart = -1;
+        long maxEnd = -1;
         Event current;
         Event next;
         Iterator<Event> it = events.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             current = it.next();
-            while(it.hasNext()){
+            //checking if two events are consecutive
+            while (it.hasNext()) {
                 next = it.next();
-                if(next.getStarting()<=current.getEnding())
+                //checking is consecutive(intersect)
+                if (next.getStarting() <= current.getEnding()) {
                     continue;
-                if(getGap(current, next)>maxLen){
+                } //not consecutive, find the gap
+                else if (getGap(current, next) > maxLen) {
                     maxStart = current.getEnding();
                     maxEnd = next.getStarting();
+                    maxLen = getGap(current, next);
+                    break;
                 }
             }
         }
+        //if no gap, return null
+        return maxStart == -1 ? null : new Period(id + 1, maxStart, maxEnd);
     }
 
     @Override
-    public Period findMostOverlayedPeriod() {
-        return null;
+    public Period findLongestConsecutivePeriod() {
+        if (events.isEmpty()) {
+            return null;
+        }
+        if (events.size() == 1) {
+            Event e = events.peek();
+            return new Period(id + 1, e.getStarting(), e.getEnding());
+        }
+        long maxStart = -1;
+        long maxEnd = -1;
+        long maxLen = 0;
+        long currentLen = 0;
+        Event current;
+        Event next;
+        Iterator<Event> it = events.iterator();
+        while (it.hasNext()) {
+            currentLen = 0;
+            current = it.next();
+            while (it.hasNext()) {
+                next = it.next();
+                //consecutive, extend the current len
+                if (next.getStarting() <= current.getEnding()) {
+                    currentLen = next.getEnding() - current.getStarting();
+                } else if (currentLen > maxLen) {
+                    //if not consecutive, check and update the max len
+                    maxLen = currentLen;
+                    maxStart = current.getStarting();
+                    maxEnd = next.getEnding();
+                    break;
+                }
+            }
+        }
+        return (maxStart == -1 ? null : new Period(id + 1, maxStart, maxEnd));
     }
 }
