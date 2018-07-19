@@ -1,5 +1,6 @@
 package shit;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -574,5 +575,17 @@ public class Period implements iSchedule {
             }
         }
         return (maxStart == -1 ? null : new Period(id + 1, maxStart, maxEnd));
+    }
+    
+    @Override
+    public String toString(){
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Period ").append(id).append("\n").append(df.format(new Date(starting))).append("\n");
+        for(Event e:events){
+            sb.append(e).append("\n");
+        }
+        sb.append(df.format(new Date(ending)));
+        return sb.toString();
     }
 }

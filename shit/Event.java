@@ -1,5 +1,6 @@
 package shit;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 
@@ -416,6 +417,16 @@ public class Event implements Comparable {
     
     public Event getCopy(){
         return new Event(id+1,title,description,starting,ending,participators,priority,earlyAlarmPeriod);
+    }
+    
+    @Override
+    public String toString(){
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        StringBuilder sb = new StringBuilder();
+        sb.append(title);
+        sb.append("("+id+")");
+        sb.append(":").append(df.format(new Date(starting))).append("-").append(df.format(new Date(ending)));
+        return sb.toString();
     }
 
 }
