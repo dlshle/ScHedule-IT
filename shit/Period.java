@@ -146,13 +146,15 @@ public class Period implements iSchedule {
             System.out.println("The event is too early or too late for the SHIT.");
             return false;
         }
-        Event tempEvent;
         while (startFrom < ending) {
             //as new event has just different id, starting and ending time:
             e.setStarting(startFrom);
             e.setEnding(startFrom + period);
-            tempEvent = e.getCopy();//deep copy method has already changed the id
-            if (!addEvent(tempEvent)) {
+            Event tempEvent = e.getCopy();
+            //System.out.println(DateToolSet.sdf.format(tempEvent.getStartingDate()));
+            //System.out.println(DateToolSet.sdf.format(tempEvent.getEndingDate()));
+            if (!addEvent(e.getCopy())) {
+                //deep copy method has already changed the id
                 return false;
             }
             //increatment the startFrom by one day

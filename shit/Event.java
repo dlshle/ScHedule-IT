@@ -323,15 +323,23 @@ public class Event implements Comparable {
         this.description = description;
     }
 
-    public boolean setStarting(long starting) {
+    public void setStarting(long starting) {
+        this.starting = starting;
+    }
+    
+    public void setStartingDate(Date starting){
+        setStarting(starting.getTime());
+    }
+    
+    public boolean changeStarting(long starting){
         if(starting>ending)
             return false;
         this.starting = starting;
         return true;
     }
     
-    public boolean setStartingDate(Date startingDate){
-        return setStarting(startingDate.getTime());
+    public boolean changeStartingDate(Date startingDate){
+        return changeStarting(startingDate.getTime());
     }
 
     public boolean setEnding(long ending) {
@@ -421,7 +429,7 @@ public class Event implements Comparable {
     
     @Override
     public String toString(){
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss E");
         StringBuilder sb = new StringBuilder();
         sb.append(title);
         sb.append("("+id+")");
