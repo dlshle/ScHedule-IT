@@ -1,18 +1,18 @@
 package shit;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.PriorityQueue;
+
 /**
- * Useless shit
- * @author Xuri
+ * DateToolSet
+ * DateToolSet contains a series of useful date constants/ date(s) converting 
+ * and sorting methods.
+ * @author Xuri Li
+ * @since 07/03/2018
  */
-public class SDate {
-    
-    private long time;
-    private int year;
-    private int month;
-    private int date;
-    private int hour;
-    private int minute;
-    private int second;
-    
+public class DateToolSet {
     //current time begins from Jan 1 1970
     //feb of leap years have 29 days(normally 28days)
     public static final long MINUTE = 64000;
@@ -23,14 +23,12 @@ public class SDate {
     public static final long YEAR_IN_SECONDS = 31536000;
     
     private static int[] leapYears = {1972,1976,1980,1984,1988,1992,1996,2000,2004,2008,2012,2016,2020,2024,2028,2032,2036,2040,2044,2048};
+    public static int[] LEAP_YEAR_MONTHS = {31,29,31,30,31,30,31,31,30,31,30,31};
+    public static int[] MONTHS = {31,28,31,30,31,30,31,31,30,31,30,31};
     
-    public SDate(long time){
-        this.time = time;
-        Long leftOverSeconds = time/1000;
-        this.year = getYear(leftOverSeconds);
-    }
+    public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
     
-    public int binSearch(int[] arr, int target){
+    public static int binSearch(int[] arr, int target){
         if(arr.length==0)
             return -1;
         int left = 0;
@@ -49,8 +47,27 @@ public class SDate {
         return -1;
     }
     
-    public int getYear(long seconds){
+    public static boolean isLeapYear(int year){
+        if(year<1970||year>2048)
+            return false;
+        return binSearch(leapYears, year)>-1;
+    }
+    
+    public static void sortAndSetSameYear(List<Date> dates){
+        PriorityQueue<Date> buffer = new PriorityQueue<>();
+        Date temp;
+        while(!dates.isEmpty()){
+            temp = dates.get(0);
+            temp.setYear(1970);
+            buffer.add(temp);
+        }
+        while(buffer.isEmpty())
+            dates.add(buffer.poll());
+    }
+    
+    public static int getYear(long time){
         int year = 1970;
+        long seconds = time/1000;
         while(seconds<LEAP_YEAR_IN_SECONDS){
             //if the year is a leap year, subtract LEAP_YEAR_IN_SECONDS from seconds, or subtract YEAR_IN_SECONDS from it.
             seconds-=(binSearch(leapYears,year)>-1?LEAP_YEAR_IN_SECONDS:YEAR_IN_SECONDS);
@@ -61,7 +78,7 @@ public class SDate {
         return (binSearch(leapYears, year)>-1?year:++year);
     }
     
-    public long getYearLeftOver(long time){
+    public static long getYearLeftOver(long time){
         int year = 1970;
         long seconds = time/1000;
         while(seconds<LEAP_YEAR_IN_SECONDS){
@@ -72,28 +89,31 @@ public class SDate {
         return (binSearch(leapYears, year)>-1?seconds*1000:(seconds-YEAR_IN_SECONDS)*1000);
     }
     
-    public int getMonth(long time){
-        long left = getYearLeftOver(time);
+    /*
+     TO-DO: finish methods below in an efficient way(?)
+    */
+    public static int getMonth(long timeInMill){
+        long left = getYearLeftOver(timeInMill);
         return -1;
     }
     
-    public int getDate(long time){
+    public static int getDate(long timeInMill){
         return -1;
     }
     
-    public int getDay(long time){
+    public static int getDay(long timeInMill){
         return -1;
     }
     
-    public int getHour(long time){
+    public static int getHour(long timeInMill){
         return -1;
     }
     
-    public int getMinute(long time){
+    public static int getMinute(long timeInMill){
         return -1;
     }
     
-    public int getSecond(long time){
+    public static int getSecond(long timeInMill){
         return -1;
     }
     

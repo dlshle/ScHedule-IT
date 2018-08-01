@@ -15,9 +15,9 @@ public class Event implements Comparable {
     //if two events have the same starting time, priority will decide which one comes first
     private int priority;
     private long earlyAlarmPeriod = 0;
-
+    
     public Event(int id, String title, String description, long starting, long ending) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting;
@@ -31,7 +31,7 @@ public class Event implements Comparable {
     }
 
     public Event(int id, String title, String description, long starting, long ending, HashSet<Personel> participators) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting;
@@ -45,7 +45,7 @@ public class Event implements Comparable {
     }
 
     public Event(int id, String title, String description, long starting, long ending, int priority) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting;
@@ -59,7 +59,7 @@ public class Event implements Comparable {
     }
 
     public Event(int id, String title, String description, long starting, long ending, HashSet<Personel> participators, int priority) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting;
@@ -73,7 +73,7 @@ public class Event implements Comparable {
     }
     
     public Event(int id, String title, String description, long starting, long ending, long earlyAlarm) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting;
@@ -88,7 +88,7 @@ public class Event implements Comparable {
     }
 
     public Event(int id, String title, String description, long starting, long ending, HashSet<Personel> participators, long earlyAlarm) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting;
@@ -103,7 +103,7 @@ public class Event implements Comparable {
     }
 
     public Event(int id, String title, String description, long starting, long ending, int priority, long earlyAlarm) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting;
@@ -118,7 +118,7 @@ public class Event implements Comparable {
     }
 
     public Event(int id, String title, String description, long starting, long ending, HashSet<Personel> participators, int priority, long earlyAlarm) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting;
@@ -133,7 +133,7 @@ public class Event implements Comparable {
     }
     
     public Event(int id, String title, String description, Date starting, Date ending) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting.getTime();
@@ -147,7 +147,7 @@ public class Event implements Comparable {
     }
 
     public Event(int id, String title, String description, Date starting, Date ending, HashSet<Personel> participators) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting.getTime();
@@ -161,7 +161,7 @@ public class Event implements Comparable {
     }
 
     public Event(int id, String title, String description, Date starting, Date ending, int priority) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting.getTime();
@@ -175,7 +175,7 @@ public class Event implements Comparable {
     }
 
     public Event(int id, String title, String description, Date starting, Date ending, HashSet<Personel> participators, int priority) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting.getTime();
@@ -188,7 +188,7 @@ public class Event implements Comparable {
         this.priority = priority;
     }
     public Event(int id, String title, String description, Date starting, Date ending, long earlyAlarm) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting.getTime();
@@ -203,7 +203,7 @@ public class Event implements Comparable {
     }
 
     public Event(int id, String title, String description, Date starting, Date ending, HashSet<Personel> participators, long earlyAlarm) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting.getTime();
@@ -218,7 +218,7 @@ public class Event implements Comparable {
     }
 
     public Event(int id, String title, String description, Date starting, Date ending, int priority, long earlyAlarm) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting.getTime();
@@ -233,7 +233,7 @@ public class Event implements Comparable {
     }
 
     public Event(int id, String title, String description, Date starting, Date ending, HashSet<Personel> participators, int priority, long earlyAlarm) {
-        this.id = id;
+        this.id = iSchedule.checkAndAssignValidEventId(id);
         this.title = title;
         this.description = description;
         this.starting = starting.getTime();

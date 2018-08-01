@@ -8,19 +8,24 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-public class Period implements iSchedule {
+/**
+ * TimePeriod is a container of events(basically an event manager)
+ * @author amnisia
+ * @since 07/03/2018
+ */
+public class TimePeriod implements iSchedule {
 
     protected long id;
     protected long starting;
     protected long ending;
     protected PriorityQueue<Event> events;
 
-    public Period(long id, long starting, long ending) {
-        if (iSchedule.idList.contains(id)) {
+    public TimePeriod(long id, long starting, long ending) {
+        if (iSchedule.TIME_PERIOD_IDS.contains(id)) {
             int newId;
             do {
                 newId = (int) (Math.random() * 1000);
-            } while (!iSchedule.idList.add(newId));
+            } while (!iSchedule.TIME_PERIOD_IDS.add(newId));
         }
         this.id = id;
         this.starting = starting;
@@ -33,12 +38,12 @@ public class Period implements iSchedule {
         events = new PriorityQueue<>();
     }
 
-    public Period(long id, Date starting, Date ending) {
-        if (iSchedule.idList.contains(id)) {
+    public TimePeriod(long id, Date starting, Date ending) {
+        if (iSchedule.TIME_PERIOD_IDS.contains(id)) {
             int newId;
             do {
                 newId = (int) (Math.random() * 1000);
-            } while (!iSchedule.idList.add(newId));
+            } while (!iSchedule.TIME_PERIOD_IDS.add(newId));
         }
         this.id = id;
         this.starting = starting.getTime();
@@ -51,12 +56,12 @@ public class Period implements iSchedule {
         events = new PriorityQueue<>();
     }
 
-    public Period(long id, long starting, long ending, PriorityQueue<Event> events) {
-        if (iSchedule.idList.contains(id)) {
+    public TimePeriod(long id, long starting, long ending, PriorityQueue<Event> events) {
+        if (iSchedule.TIME_PERIOD_IDS.contains(id)) {
             int newId;
             do {
                 newId = (int) (Math.random() * 1000);
-            } while (!iSchedule.idList.add(newId));
+            } while (!iSchedule.TIME_PERIOD_IDS.add(newId));
         }
         this.id = id;
         this.starting = starting;
@@ -69,12 +74,12 @@ public class Period implements iSchedule {
         this.events = events;
     }
 
-    public Period(long id, Date starting, Date ending, PriorityQueue<Event> events) {
-        if (iSchedule.idList.contains(id)) {
+    public TimePeriod(long id, Date starting, Date ending, PriorityQueue<Event> events) {
+        if (iSchedule.TIME_PERIOD_IDS.contains(id)) {
             int newId;
             do {
                 newId = (int) (Math.random() * 1000);
-            } while (!iSchedule.idList.add(newId));
+            } while (!iSchedule.TIME_PERIOD_IDS.add(newId));
         }
         this.id = id;
         this.starting = starting.getTime();
@@ -509,12 +514,12 @@ public class Period implements iSchedule {
     }
 
     @Override
-    public Period findLongestGap() {
+    public TimePeriod findLongestGap() {
         if (events.isEmpty()) {
-            return new Period(id + 1, starting, ending);
+            return new TimePeriod(id + 1, starting, ending);
         }
         if (events.size() == 1) {
-            return (starting - events.peek().getStarting() >= ending - events.peek().getEnding() ? new Period(id + 1, starting, events.peek().getStarting()) : new Period(id + 1, events.peek().getEnding(), ending));
+            return (starting - events.peek().getStarting() >= ending - events.peek().getEnding() ? new TimePeriod(id + 1, starting, events.peek().getStarting()) : new TimePeriod(id + 1, events.peek().getEnding(), ending));
         }
         long maxLen = 0;
         long maxStart = -1;
@@ -540,17 +545,17 @@ public class Period implements iSchedule {
             }
         }
         //if no gap, return null
-        return maxStart == -1 ? null : new Period(id + 1, maxStart, maxEnd);
+        return maxStart == -1 ? null : new TimePeriod(id + 1, maxStart, maxEnd);
     }
 
     @Override
-    public Period findLongestConsecutivePeriod() {
+    public TimePeriod findLongestConsecutivePeriod() {
         if (events.isEmpty()) {
             return null;
         }
         if (events.size() == 1) {
             Event e = events.peek();
-            return new Period(id + 1, e.getStarting(), e.getEnding());
+            return new TimePeriod(id + 1, e.getStarting(), e.getEnding());
         }
         long maxStart = -1;
         long maxEnd = -1;
@@ -576,7 +581,7 @@ public class Period implements iSchedule {
                 }
             }
         }
-        return (maxStart == -1 ? null : new Period(id + 1, maxStart, maxEnd));
+        return (maxStart == -1 ? null : new TimePeriod(id + 1, maxStart, maxEnd));
     }
     
     @Override
